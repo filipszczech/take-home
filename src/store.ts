@@ -15,16 +15,16 @@ type Actions = {
 const updateList = (
   state: State,
   id: number,
-  sourceList: 'list' | 'deleted',
-  targetList: 'list' | 'deleted'
+  sourceList: ListItem[],
+  targetList: ListItem[]
 ) => {
-  const itemToMove = state[sourceList].find((item) => item.id === id);
+  const itemToMove = sourceList.find((item) => item.id === id);
   if (!itemToMove) return state;
 
   return {
     ...state,
-    [sourceList]: state[sourceList].filter((item) => item.id !== id),
-    [targetList]: [...state[targetList], itemToMove],
+    sourceList: sourceList.filter((item) => item.id !== id),
+    targetList: [...targetList, itemToMove],
   };
 };
 
@@ -37,7 +37,7 @@ export const useListDataStore = create<State & Actions>((set) => ({
         list: items,
     })),
     deleteItem: (id) =>
-      set((state) => updateList(state, id, 'list', 'deleted')),
+      set((state) => updateList(state, id, state.list, state.deleted)),
     revertItem: (id) =>
-      set((state) => updateList(state, id, 'deleted', 'list')),
+      set((state) => updateList(state, id, state.deleted, state.list)),
 }));
